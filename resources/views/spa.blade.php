@@ -30,7 +30,7 @@
                                 Доступна
                             </button>
                             <button v-else type="button" class="btn btn-outline-primary" v-on:click="changeBookAvailability(book.id)">
-                                Не доступна
+                                Выдана
                             </button>
                         </td>
                         <td>
