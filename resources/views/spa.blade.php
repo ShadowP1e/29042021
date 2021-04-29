@@ -21,17 +21,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <th scope="row">@{{arr['id']}}</th>
-                        <td>@{{arr['title']}}</td>
-                        <td>Л. Н. Толстой</td>
+                    <tr v-for="book in books">
+                        <th scope="row">@{{ book.id }}</th>
+                        <td>@{{ book.title }}</td>
+                        <td>@{{ book.author }}</td>
                         <td>
-                            <button type="button" class="btn btn-outline-primary" v-on:click="">
+                            <button v-if="book.availability" type="button" class="btn btn-outline-primary" v-on:click="changeBookAvailability(book.id)">
                                 Доступна
+                            </button>
+                            <button v-else type="button" class="btn btn-outline-primary" v-on:click="changeBookAvailability(book.id)">
+                                Не доступна
                             </button>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-outline-danger" v-on:click="">
+                            <button type="button" class="btn btn-outline-danger" v-on:click="deleteBook(book.id)">
                                 Удалить
                             </button>
                         </td>
@@ -44,7 +47,7 @@
                         <td><input type="text" class="form-control" v-model="author"></td>
                         <td></td>
                         <td>
-                            <button type="button" class="btn btn-outline-success" v-on:click="loadBookList">
+                            <button type="button" class="btn btn-outline-success" v-on:click="addBook">
                                 Добавить
                             </button>
                         </td>
@@ -66,23 +69,37 @@
             data: {
                 title: '',
                 author: '',
-                arr: [],
+                id: null,
+                books: [],
             },
             methods: {
                 loadBookList(){
                     axios.get('/api/book/all')
                         .then(res => {
-                            arr = res.data[0]
-                            console.log(res.data[0])
+                            this.books = res.data
                     })
                 },
                 addBook(){
+                    axios.post('/api/book/add', {
+                        title: this.title,
+                        author: this.author
+                    })
+                    .then((response) => {
+                        console.log(response);
+                        this.loadBookList();
+                    })
                 },
                 deleteBook(id){
-                    
+                    axios.get('/api/book/delete/' + id)
+                        .then(res => {
+                            this.loadBookList();
+                    })
                 },
                 changeBookAvailability(id){
-                    
+                    axios.get('api/book/change_availabilty/' + id)
+                        .then(res => {
+                            this.loadBookList();
+                    })
                 }
             },
             mounted(){
